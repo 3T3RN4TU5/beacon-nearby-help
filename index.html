@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>Beacon — Nearest help, one tap away</title>
+    <meta
+      name="description"
+      content="One tap to the nearest hospital, police station, pharmacy and fuel station, with live routes, travel time and weather alerts for travellers and bikers. Free, open data, no sign-up."
+    />
+    <meta name="theme-color" content="#07090c" />
+    <meta name="color-scheme" content="dark light" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon-180x180.png" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Beacon — Nearest help, one tap away" />
+    <meta
+      property="og:description"
+      content="Hospitals, police, pharmacies and fuel around you with routes, travel time and road-weather alerts."
+    />
+    <meta property="og:image" content="/og-image.jpg" />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <link rel="preconnect" href="https://tiles.openfreemap.org" crossorigin />
+    <link rel="preconnect" href="https://overpass-api.de" crossorigin />
+    <link rel="preconnect" href="https://api.open-meteo.com" crossorigin />
+
+    <script src="/theme-init.js"></script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <noscript>
+      <p style="font-family: sans-serif; padding: 24px">
+        Beacon needs JavaScript to find help near you. In an emergency, dial 112 (or your local emergency
+        number).
+      </p>
+    </noscript>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
