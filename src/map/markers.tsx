@@ -1,6 +1,6 @@
 import { motion } from 'motion/react';
 import { CategorySign } from '@/components/CategoryIcon';
-import type { CategoryId } from '@/config/categories';
+import { CATEGORIES, type CategoryId } from '@/config/categories';
 import { cn } from '@/lib/cn';
 
 export function OriginMarker({ heading }: { heading?: number | null }) {
@@ -42,7 +42,8 @@ export function PlaceMarker({ category, name, badge, emphasis, delay = 0, onSele
         e.stopPropagation();
         onSelect();
       }}
-      aria-label={name}
+      // Distinct from the panel card's button so screen readers don't hear two identical buttons.
+      aria-label={`${name}, ${CATEGORIES[category].label.toLowerCase()} on map`}
       className="group relative flex flex-col items-center outline-none"
     >
       {(badge || selected) && (

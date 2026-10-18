@@ -41,7 +41,11 @@ test.describe('Beacon', () => {
     await mockApis(page);
     await page.goto('/');
     await page.getByRole('button', { name: 'Locate me' }).click();
-    await page.getByRole('button', { name: PLACES.hospitalFarFast.name }).click();
+    // The panel card, not the map marker (which has its own, distinct label).
+    await page
+      .locator('article', { hasText: 'Hospital' })
+      .getByRole('button', { name: PLACES.hospitalFarFast.name, exact: true })
+      .click();
 
     await expect(page.getByRole('heading', { name: PLACES.hospitalFarFast.name })).toBeVisible();
     await expect(page.getByText('Emergency department')).toBeVisible();
