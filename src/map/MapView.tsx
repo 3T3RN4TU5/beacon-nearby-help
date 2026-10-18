@@ -44,6 +44,11 @@ export function MapView({ children }: { children?: ReactNode }) {
           const message = e.error?.message ?? '';
           if (/webgl/i.test(message))
             setError('Your browser could not start the 3D map (WebGL2 unavailable).');
+          // Tiles fail routinely (offline, or cancelled mid-flight) and MapLibre retries them;
+          // logging each one would bury real errors.
+          const tileFailure =
+            'tile' in e || ('sourceId' in e && Boolean(e.sourceId)) || /\.(pbf|png)\b|gibs\./.test(message);
+          if (tileFailure) return;
           // Registering a listener silences MapLibre's default logging, so report it ourselves.
           console.error('[map]', e.error ?? e);
         });

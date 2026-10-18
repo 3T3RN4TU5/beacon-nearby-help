@@ -8,7 +8,7 @@ const VARIANTS: Record<Variant, string> = {
   primary:
     'bg-accent text-accent-fg shadow-[inset_0_-2px_0_rgb(0_0_0/0.18),0_8px_24px_-10px_var(--accent)] hover:brightness-105',
   danger:
-    'bg-danger text-white shadow-[inset_0_-2px_0_rgb(0_0_0/0.2),0_10px_30px_-12px_var(--danger)] hover:brightness-110',
+    'bg-danger-solid text-white shadow-[inset_0_-2px_0_rgb(0_0_0/0.2),0_10px_30px_-12px_var(--danger)] hover:brightness-110',
   outline: 'border border-line-strong bg-surface/60 text-fg hover:bg-raised hover:border-subtle/60',
   ghost: 'text-muted hover:bg-raised hover:text-fg',
   subtle: 'bg-raised text-fg hover:bg-line-strong/60',

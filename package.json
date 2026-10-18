@@ -1,7 +1,7 @@
 {
   "name": "beacon",
   "private": true,
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "Beacon — one tap to the nearest hospital, police, pharmacy and fuel, with live routes, travel time and road-weather alerts. Built on open data, no sign-up.",
   "type": "module",
   "license": "MIT",
@@ -38,6 +38,7 @@
     "zustand": "^5.0.15"
   },
   "devDependencies": {
+    "@axe-core/playwright": "^4.14.0",
     "@eslint/js": "^10.0.1",
     "@playwright/test": "^1.64.1",
     "@tailwindcss/vite": "^4.3.3",

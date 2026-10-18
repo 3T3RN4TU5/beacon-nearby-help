@@ -77,7 +77,7 @@ export function SosView() {
       <section className="flex flex-col gap-2">
         <a
           href={telHref(primary.number)}
-          className="group relative flex items-center gap-4 overflow-hidden rounded-2xl bg-danger px-5 py-4 text-white shadow-[0_18px_40px_-18px_var(--danger)] transition-transform active:scale-[0.98]"
+          className="group relative flex items-center gap-4 overflow-hidden rounded-2xl bg-danger-solid px-5 py-4 text-white shadow-[0_18px_40px_-18px_var(--danger)] transition-transform active:scale-[0.98]"
         >
           <span
             className="absolute inset-x-0 top-0 h-1 animate-hazard hazard-stripes opacity-60 [--accent:white]"
@@ -87,7 +87,7 @@ export function SosView() {
             <Phone size={24} strokeWidth={2.4} />
           </span>
           <span className="min-w-0 flex-1">
-            <span className="block hud text-white/75">
+            <span className="block hud text-white">
               {primary.label}
               {regionName(cc) ? ` · ${regionName(cc)}` : ''}
             </span>

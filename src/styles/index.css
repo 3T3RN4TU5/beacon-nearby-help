@@ -20,7 +20,7 @@
   --line-strong: rgb(255 255 255 / 0.14);
   --fg: #eef2f6;
   --muted: #98a3b3;
-  --subtle: #5f6b7b;
+  --subtle: #7f8b9c; /* ≥ 5:1 on every dark surface (WCAG AA) */
   --accent: #d6ff3d;
   --accent-fg: #0a0d05;
   --accent-ink: #d6ff3d;
@@ -41,13 +41,22 @@
   --line-strong: rgb(12 16 22 / 0.17);
   --fg: #0b0f14;
   --muted: #4c5866;
-  --subtle: #87919d;
+  --subtle: #626c78; /* ≥ 4.5:1 on every light surface */
   --accent: #d6ff3d;
   --accent-fg: #0b0f14;
   --accent-ink: #4a6800;
-  --danger: #e0233a;
-  --warn: #c77a00;
-  --ok: #138a4c;
+  --danger: #cc2035;
+  --warn: #955b00;
+  --ok: #117943;
+  /* Signage colours are too bright to read as text on paper-white; these darker shades keep
+     every category label and badge at ≥ 4.5:1. Sign plates and map markers keep the bright set. */
+  --color-hospital: #bd3946;
+  --color-police: #3b64bf;
+  --color-pharmacy: #1a7744;
+  --color-fuel: #8a6013;
+  --color-fire: #a85120;
+  --color-ev: #137483;
+  --color-repair: #6f5f9c;
   --glass: rgb(255 255 255 / 0.9);
   --shadow: 0 1px 0 rgb(255 255 255 / 0.6) inset, 0 24px 60px -24px rgb(20 28 40 / 0.35);
 }
@@ -69,6 +78,8 @@
   --color-accent-fg: var(--accent-fg);
   --color-accent-ink: var(--accent-ink);
   --color-danger: var(--danger);
+  /* Filled red surfaces that carry white text (≥ 5:1 in both themes). */
+  --color-danger-solid: #d21f35;
   --color-warn: var(--warn);
   --color-ok: var(--ok);
   --color-glass: var(--glass);

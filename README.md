@@ -83,22 +83,23 @@ A few decisions worth knowing:
 - **Tiered search.** One Overpass query covers every category within 3 km. Only categories still missing (or that only found a clinic, not a hospital) are re-queried at 10 → 25 → 50 km. In a city that's a single request; on a highway it widens automatically.
 - **Hedged requests.** Public Overpass mirrors are often at capacity. Beacon queries the preferred mirror, races the next one if it hasn't answered within 6 s, jumps immediately on a fast failure, and aborts the losers.
 - **Road-time ranking.** The 5 straight-line-nearest candidates per category go into one OSRM _table_ request; the summary card prefers a real hospital over a quicker clinic.
+- **Progressive location.** A phone's first answer is usually a Wi-Fi/cell estimate that can be kilometres off. Beacon shows results for it immediately, keeps listening while GPS converges (±1.8 km → ±10 m in a few seconds), and re-runs the search if the correction is large. If the device never gets better than ±500 m (typical on laptops), it says so and offers **Set exact spot**: drag the map under a fixed pin, ride-hailing style.
 - **Search anchor.** Live tracking moves your dot continuously but only re-searches after you've moved 800 m, so it doesn't hammer donated infrastructure.
 - **Opening hours** are evaluated in the _place's_ time zone with an in-house parser for the common OSM syntax; anything richer is reported as unknown rather than guessed.
 - **Weather alerts** come from a pure, unit-tested rules engine with thresholds from standard meteorological and road-safety guidance — deterministic, no AI.
 
 ## Tech stack
 
-| Layer    | Choice                                                                                              |
-| -------- | --------------------------------------------------------------------------------------------------- |
-| App      | React 19 · TypeScript (strict) · Vite 8                                                             |
-| Map      | MapLibre GL JS 6 — globe projection, 3D buildings, atmosphere                                       |
-| Data     | TanStack Query (persisted to localStorage) · Zustand                                                |
-| UI       | Tailwind CSS 4 · Motion · Lucide · Overpass & Overpass Mono typefaces                               |
-| PWA      | vite-plugin-pwa (Workbox) — precache + runtime tile cache                                           |
-| Quality  | Vitest (84 unit tests) · Playwright (end-to-end, mocked APIs, desktop + mobile) · ESLint · Prettier |
-| CI/CD    | GitHub Actions · Vercel / GitHub Pages / Cloudflare Pages · Dependabot                              |
-| Security | Strict Content-Security-Policy, Permissions-Policy, HSTS (one source: [`vercel.json`](vercel.json)) |
+| Layer    | Choice                                                                                                                                                                              |
+| -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| App      | React 19 · TypeScript (strict) · Vite 8                                                                                                                                             |
+| Map      | MapLibre GL JS 6 — globe projection, 3D buildings, atmosphere                                                                                                                       |
+| Data     | TanStack Query (persisted to localStorage) · Zustand                                                                                                                                |
+| UI       | Tailwind CSS 4 · Motion · Lucide · Overpass & Overpass Mono typefaces                                                                                                               |
+| PWA      | vite-plugin-pwa (Workbox) — precache + runtime tile cache                                                                                                                           |
+| Quality  | Vitest (96 unit tests) · Playwright (38 end-to-end runs on desktop Chrome, Android and iPhone/WebKit, mocked APIs and scripted GPS) · axe-core WCAG 2.2 AA gate · ESLint · Prettier |
+| CI/CD    | GitHub Actions · Vercel / GitHub Pages / Cloudflare Pages · Dependabot                                                                                                              |
+| Security | Strict Content-Security-Policy, Permissions-Policy, HSTS (one source: [`vercel.json`](vercel.json))                                                                                 |
 
 ## Getting started
 

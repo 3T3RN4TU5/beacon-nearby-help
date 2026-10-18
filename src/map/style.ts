@@ -68,11 +68,41 @@ export function labelsStartIndex(layers: readonly { type: string }[]): number {
   return 0;
 }
 
+const NUMERIC_COMPARISONS = new Set(['<', '<=', '>', '>=']);
+const isGet = (v: unknown): v is ['get', string] =>
+  Array.isArray(v) && v.length === 2 && v[0] === 'get' && typeof v[1] === 'string';
+
+/**
+ * Upstream filters such as `["<=", ["get", "ref_length"], 6]` hit features that lack the property
+ * and MapLibre logs a warning for each one. Coalesce those reads to a value that makes the
+ * comparison false — the same outcome, without the console noise.
+ */
+export function nullSafeComparisons(expr: unknown): unknown {
+  if (!Array.isArray(expr)) return expr;
+  const [op, left, right] = expr;
+  if (
+    typeof op === 'string' &&
+    NUMERIC_COMPARISONS.has(op) &&
+    expr.length === 3 &&
+    isGet(left) &&
+    typeof right === 'number'
+  ) {
+    const never = op.startsWith('<') ? Number.MAX_SAFE_INTEGER : -Number.MAX_SAFE_INTEGER;
+    return [op, ['coalesce', left, never], right];
+  }
+  return expr.map(nullSafeComparisons);
+}
+
 export function themeStyle(base: StyleSpecification, theme: MapTheme): StyleSpecification {
   const palette = PALETTES[theme];
   const recolor = (c: string) => tint(c, palette.tint);
 
-  const layers: LayerSpecification[] = base.layers.map((layer) => {
+  const layers: LayerSpecification[] = base.layers.map((original) => {
+    const layer = (
+      'filter' in original && original.filter
+        ? { ...original, filter: nullSafeComparisons(original.filter) }
+        : original
+    ) as LayerSpecification;
     if (!('paint' in layer) || !layer.paint) return layer;
     const paint = Object.fromEntries(
       Object.entries(layer.paint).map(([k, v]) => [k, k.endsWith('-color') ? mapColors(v, recolor) : v]),

@@ -3,6 +3,7 @@ import { AnimatePresence, motion, type Variants } from 'motion/react';
 import { ArrowRight, History, LocateFixed, Phone, ShieldAlert, TriangleAlert } from 'lucide-react';
 import { PRIMARY_CATEGORIES, SECONDARY_CATEGORIES, CATEGORIES } from '@/config/categories';
 import { guessCountryCode, primaryLine } from '@/features/emergency/numbers';
+import { cancelLocate } from '@/features/location/controller';
 import { telHref } from '@/features/emergency/share';
 import type { GeoErrorKind } from '@/features/location/geolocate';
 import { useNow } from '@/hooks/useEnvironment';
@@ -224,7 +225,7 @@ function GeoErrorCard({ kind, onSearch }: { kind: GeoErrorKind; onSearch: () => 
 
 /** Radar sweep over the globe while the device acquires a fix. */
 function LocatingOverlay() {
-  const cancel = useApp((s) => s.cancelLocating);
+  const cancel = cancelLocate;
   const insets = useMapInsets();
   const [elapsed, setElapsed] = useState(0);
 

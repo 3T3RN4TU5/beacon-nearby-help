@@ -29,7 +29,12 @@ export class Siren {
   }
 
   async start(): Promise<void> {
-    if (this.active) return;
+    if (this.active || this.vibrateTimer) return;
+    // Vibrate first: it should keep going even if the browser refuses to play sound.
+    if ('vibrate' in navigator) {
+      navigator.vibrate([400, 200, 400]);
+      this.vibrateTimer = setInterval(() => navigator.vibrate([400, 200, 400]), 1200);
+    }
     const ctx = await this.prime();
 
     const tone = ctx.createOscillator();
@@ -61,11 +66,6 @@ export class Siren {
     lfo.start();
 
     this.nodes = [tone, lfo, depth, filter, compressor, out];
-
-    if ('vibrate' in navigator) {
-      navigator.vibrate([400, 200, 400]);
-      this.vibrateTimer = setInterval(() => navigator.vibrate([400, 200, 400]), 1200);
-    }
   }
 
   stop(): void {

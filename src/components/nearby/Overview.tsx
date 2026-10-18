@@ -132,7 +132,7 @@ function SecondaryRow({ result }: { result: CategoryResult }) {
       >
         <CategorySign id={result.id} size="sm" className={nearest ? '' : 'grayscale'} />
         <span className="min-w-0 flex-1">
-          <span className="block hud" style={{ color: def.color }}>
+          <span className="block hud" style={{ color: `var(--color-${def.id})` }}>
             {def.label}
           </span>
           <span className="block truncate text-sm font-semibold">

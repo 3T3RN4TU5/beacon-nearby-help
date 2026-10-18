@@ -94,7 +94,7 @@ export function PlaceDetail({ from }: { placeId: string; from?: CategoryId }) {
       <header className="flex items-start gap-3.5">
         <CategorySign id={place.category} size="lg" />
         <div className="min-w-0">
-          <p className="hud" style={{ color: def.color }}>
+          <p className="hud" style={{ color: `var(--color-${def.id})` }}>
             {place.subtype}
             {place.brand && place.brand !== place.name ? ` · ${place.brand}` : ''}
           </p>

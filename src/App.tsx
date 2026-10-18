@@ -2,13 +2,16 @@ import { useEffect, useState } from 'react';
 import { CATEGORIES, PRIMARY_CATEGORIES } from '@/config/categories';
 import { AboutDialog } from '@/components/AboutDialog';
 import { Landing } from '@/components/Landing';
+import { NoticeToast } from '@/components/NoticeToast';
 import { Panel } from '@/components/panel/Panel';
 import { TopBar } from '@/components/TopBar';
 import { UpdatePrompt } from '@/components/UpdatePrompt';
 import { useResolvedTheme } from '@/hooks/useEnvironment';
+import { useHistorySync } from '@/hooks/useHistorySync';
 import { useLocate, useTracking } from '@/hooks/useLocate';
 import { useScene } from '@/hooks/useScene';
 import { formatDuration } from '@/lib/format';
+import { AdjustOverlay } from '@/map/AdjustOverlay';
 import { MapControls } from '@/map/MapControls';
 import { MapScene } from '@/map/MapScene';
 import { MapView } from '@/map/MapView';
@@ -54,6 +57,7 @@ export function App() {
   useResolvedTheme();
   useTracking();
   useLaunchShortcut();
+  useHistorySync();
   const [aboutOpen, setAboutOpen] = useState(false);
 
   return (
@@ -61,11 +65,13 @@ export function App() {
       <MapView>
         <MapScene />
         <MapControls />
+        <AdjustOverlay />
       </MapView>
       <Landing />
       <TopBar onAbout={() => setAboutOpen(true)} />
       <Panel />
       <ResultsAnnouncer />
+      <NoticeToast />
       <UpdatePrompt />
       <AboutDialog open={aboutOpen} onClose={() => setAboutOpen(false)} />
     </div>

@@ -12,12 +12,21 @@ export type ThemePref = 'system' | 'dark' | 'light';
 export type SheetSnap = 'peek' | 'half' | 'full';
 
 export interface Origin extends LatLng {
-  source: 'gps' | 'search';
+  /** gps: device fix · search: a searched place · pin: the user placed it on the map by hand. */
+  source: 'gps' | 'search' | 'pin';
   accuracy?: number;
   heading?: number | null;
   /** Label from a search result; GPS origins get theirs from reverse geocoding. */
   label?: string;
   at: number;
+}
+
+/** idle · locating: waiting for a first fix · refining: have a fix, GPS still improving it. */
+export type LocateStatus = 'idle' | 'locating' | 'refining';
+
+export interface Notice {
+  tone: 'error' | 'info';
+  message: string;
 }
 
 export type View =
@@ -51,6 +60,16 @@ const EMPTY_MEDICAL: MedicalInfo = {
 
 /** Re-run searches only after moving this far, so live tracking doesn't hammer free APIs. */
 const ANCHOR_SHIFT_M = 800;
+/** While a fresh fix is being refined, a correction this large means the first fix was wrong. */
+const REFINE_SHIFT_M = 120;
+
+const LOCATE_ERROR_MESSAGES: Record<GeoErrorKind, string> = {
+  denied: 'Location access is blocked — allow it in your browser settings, or set your spot on the map.',
+  timeout: 'Couldn’t get a location fix in time. Showing results for your last position.',
+  unavailable: 'Your device couldn’t find your location. Showing results for your last position.',
+  insecure: 'Location needs a secure (https) connection.',
+  unsupported: 'This browser can’t share your location.',
+};
 
 interface AppState {
   phase: Phase;
@@ -60,6 +79,10 @@ interface AppState {
   anchor: Origin | null;
   lastOrigin: Origin | null;
   geoError: GeoErrorKind | null;
+  locateStatus: LocateStatus;
+  /** Manual correction mode: the user moves the map under a centre pin. */
+  adjusting: boolean;
+  notice: Notice | null;
   tracking: boolean;
   panel: Panel;
   view: View;
@@ -76,6 +99,12 @@ interface AppState {
   failLocating: (kind: GeoErrorKind) => void;
   setOrigin: (origin: Origin) => void;
   updateFix: (fix: Pick<Origin, 'lat' | 'lon' | 'accuracy' | 'heading'>) => void;
+  /** A more accurate fix for the location just acquired. */
+  refineFix: (fix: Pick<Origin, 'lat' | 'lon' | 'accuracy' | 'heading'>) => void;
+  setLocateStatus: (status: LocateStatus) => void;
+  setAdjusting: (on: boolean) => void;
+  notify: (notice: Notice) => void;
+  dismissNotice: () => void;
   setTracking: (on: boolean) => void;
   goHome: () => void;
 
@@ -102,6 +131,9 @@ export const useApp = create<AppState>()(
       anchor: null,
       lastOrigin: null,
       geoError: null,
+      locateStatus: 'idle',
+      adjusting: false,
+      notice: null,
       tracking: false,
       panel: 'nearby',
       view: { kind: 'overview' },
@@ -112,9 +144,25 @@ export const useApp = create<AppState>()(
       medical: EMPTY_MEDICAL,
       contacts: [],
 
-      startLocating: () => set({ phase: get().origin ? 'active' : 'locating', geoError: null }),
-      cancelLocating: () => set((s) => ({ phase: s.origin ? 'active' : 'landing' })),
-      failLocating: (kind) => set((s) => ({ phase: s.origin ? 'active' : 'landing', geoError: kind })),
+      startLocating: () =>
+        set({
+          phase: get().origin ? 'active' : 'locating',
+          geoError: null,
+          locateStatus: 'locating',
+          notice: null,
+        }),
+      cancelLocating: () => set((s) => ({ phase: s.origin ? 'active' : 'landing', locateStatus: 'idle' })),
+      failLocating: (kind) =>
+        set((s) =>
+          s.origin
+            ? // Already showing results: keep them and explain, instead of dumping the user on the landing screen.
+              {
+                phase: 'active',
+                locateStatus: 'idle',
+                notice: { tone: 'error', message: LOCATE_ERROR_MESSAGES[kind] },
+              }
+            : { phase: 'landing', locateStatus: 'idle', geoError: kind },
+        ),
       setOrigin: (origin) =>
         set({
           origin,
@@ -122,6 +170,8 @@ export const useApp = create<AppState>()(
           lastOrigin: origin,
           phase: 'active',
           geoError: null,
+          adjusting: false,
+          notice: null,
           view: { kind: 'overview' },
           sheet: 'half',
         }),
@@ -132,6 +182,18 @@ export const useApp = create<AppState>()(
           const moved = !s.anchor || haversine(s.anchor, origin) > ANCHOR_SHIFT_M;
           return moved ? { origin, anchor: origin, lastOrigin: origin } : { origin };
         }),
+      refineFix: (fix) =>
+        set((s) => {
+          if (!s.origin || s.origin.source !== 'gps') return {};
+          const origin: Origin = { ...s.origin, ...fix, at: Date.now() };
+          const corrected = !s.anchor || haversine(s.anchor, origin) > REFINE_SHIFT_M;
+          return corrected ? { origin, anchor: origin, lastOrigin: origin } : { origin, lastOrigin: origin };
+        }),
+      setLocateStatus: (locateStatus) => set({ locateStatus }),
+      setAdjusting: (adjusting) =>
+        set(adjusting ? { adjusting, sheet: 'peek', tracking: false } : { adjusting }),
+      notify: (notice) => set({ notice }),
+      dismissNotice: () => set({ notice: null }),
       setTracking: (tracking) => set({ tracking }),
       goHome: () =>
         set({
@@ -139,6 +201,9 @@ export const useApp = create<AppState>()(
           origin: null,
           anchor: null,
           tracking: false,
+          adjusting: false,
+          locateStatus: 'idle',
+          notice: null,
           view: { kind: 'overview' },
           panel: 'nearby',
         }),

@@ -1,34 +1,12 @@
-import { useCallback, useEffect, useRef } from 'react';
-import { GeoError, locate, watchFix } from '@/features/location/geolocate';
+import { useEffect } from 'react';
+import { locateMe } from '@/features/location/controller';
+import { watchFix } from '@/features/location/geolocate';
 import { haversine } from '@/lib/geo';
 import { useApp } from '@/store/app';
 
-/** One-shot "find me": GPS with coarse fallback, wired into the app state machine. */
+/** "Find me": first fix at once, then GPS refinement (see features/location/controller). */
 export function useLocate() {
-  const startLocating = useApp((s) => s.startLocating);
-  const setOrigin = useApp((s) => s.setOrigin);
-  const failLocating = useApp((s) => s.failLocating);
-  const attempt = useRef(0);
-
-  return useCallback(async () => {
-    const id = ++attempt.current;
-    startLocating();
-    try {
-      const fix = await locate();
-      if (id !== attempt.current || useApp.getState().phase === 'landing') return; // cancelled meanwhile
-      setOrigin({
-        lat: fix.lat,
-        lon: fix.lon,
-        accuracy: fix.accuracy,
-        heading: fix.heading,
-        source: 'gps',
-        at: Date.now(),
-      });
-    } catch (error) {
-      if (id !== attempt.current) return;
-      failLocating(error instanceof GeoError ? error.kind : 'unavailable');
-    }
-  }, [startLocating, setOrigin, failLocating]);
+  return locateMe;
 }
 
 /**

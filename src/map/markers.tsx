@@ -5,7 +5,11 @@ import { cn } from '@/lib/cn';
 
 export function OriginMarker({ heading }: { heading?: number | null }) {
   return (
-    <div className="pointer-events-none relative grid size-7 place-items-center" aria-label="Your location">
+    <div
+      className="pointer-events-none relative grid size-7 place-items-center"
+      role="img"
+      aria-label="Your location"
+    >
       {heading != null && (
         <span
           className="absolute size-20 origin-center"

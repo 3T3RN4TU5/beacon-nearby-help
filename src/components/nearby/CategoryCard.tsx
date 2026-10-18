@@ -36,7 +36,7 @@ export function CategoryCard({ result }: { result: CategoryResult }) {
         {nearest?.emergency && <Badge tone="danger">ER</Badge>}
       </div>
 
-      <p className="mt-3 hud" style={{ color: def.color }}>
+      <p className="mt-3 hud" style={{ color: `var(--color-${def.id})` }}>
         {def.label}
       </p>
 

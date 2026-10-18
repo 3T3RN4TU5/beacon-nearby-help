@@ -61,6 +61,7 @@ export function MapScene() {
   const phase = useApp((s) => s.phase);
   const origin = useApp((s) => s.origin);
   const tracking = useApp((s) => s.tracking);
+  const adjusting = useApp((s) => s.adjusting);
   const openPlace = useApp((s) => s.openPlace);
   const { anchor, view, nearby, selected, route } = useScene();
   const results = nearby.results;
@@ -182,12 +183,17 @@ export function MapScene() {
     const done = () => setIntroFor(key);
     map.once('moveend', done);
 
-    if (previous && haversine(previous, anchor) < 30_000) {
-      // Small hops (live tracking, nearby search) glide…
+    const target = { center, zoom: 14.6, pitch: 52, bearing: -16, padding: insetsRef.current };
+    if (previous && map.isMoving()) {
+      // GPS corrected the fix while the fly-in was still running: retarget the same flight,
+      // otherwise an ease from mid-air would leave the map stuck zoomed out.
+      if (reduced) map.jumpTo(target);
+      else map.flyTo({ ...target, duration: 1600, essential: true });
+    } else if (previous && haversine(previous, anchor) < 30_000) {
+      // Small hops (live tracking, refinement, nearby search) glide…
       map.easeTo({ center, padding: insetsRef.current, duration: reduced ? 0 : 1200 });
     } else {
       // …a new place flies in from the globe.
-      const target = { center, zoom: 14.6, pitch: 52, bearing: -16, padding: insetsRef.current };
       if (reduced) map.jumpTo(target);
       else map.flyTo({ ...target, duration: 3800, curve: 1.55, essential: true });
     }
@@ -209,7 +215,8 @@ export function MapScene() {
   }, [view, markers, route.data]);
 
   useEffect(() => {
-    if (phase !== 'active' || !introDone || !anchor) return;
+    // Never move the camera under the user while they are placing the pin by hand.
+    if (phase !== 'active' || !introDone || !anchor || adjusting) return;
     let points: LatLng[];
     if (view.kind === 'place') {
       if (!selected) return;
@@ -235,10 +242,10 @@ export function MapScene() {
 
   /* ---------- follow mode ---------- */
   useEffect(() => {
-    if (tracking && origin && phase === 'active' && view.kind === 'overview') {
+    if (tracking && !adjusting && origin && phase === 'active' && view.kind === 'overview') {
       map.easeTo({ center: [origin.lon, origin.lat], duration: reduced ? 0 : 800 });
     }
-  }, [map, tracking, origin, phase, view.kind, reduced]);
+  }, [map, tracking, adjusting, origin, phase, view.kind, reduced]);
 
   /* ---------- route line ---------- */
   useEffect(() => {

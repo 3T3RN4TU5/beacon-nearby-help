@@ -321,7 +321,13 @@ function hazardTone(h: HourlyPoint): string | null {
 
 function HourlyStrip({ hours, offset, units }: { hours: HourlyPoint[]; offset: number; units: Units }) {
   return (
-    <div className="-mx-4 scrollbar-none overflow-x-auto px-4 sm:-mx-5 sm:px-5">
+    // Focusable so keyboard users can scroll the strip with the arrow keys.
+    <div
+      className="-mx-4 scrollbar-none overflow-x-auto px-4 sm:-mx-5 sm:px-5"
+      role="region"
+      aria-label="Hourly forecast"
+      tabIndex={0}
+    >
       <ol className="flex w-max gap-1.5">
         {hours.map((h, i) => {
           const tone = hazardTone(h);

@@ -28,11 +28,12 @@ const toFix = (p: GeolocationPosition): Fix => ({
   timestamp: p.timestamp,
 });
 
+// Numeric codes per the Geolocation spec (1 denied, 2 unavailable, 3 timeout).
 const toGeoError = (e: GeolocationPositionError): GeoError => {
   switch (e.code) {
-    case e.PERMISSION_DENIED:
+    case 1:
       return new GeoError('denied', 'Location permission was denied.');
-    case e.TIMEOUT:
+    case 3:
       return new GeoError('timeout', 'Getting a location fix took too long.');
     default:
       return new GeoError('unavailable', 'Your device could not determine a location.');
@@ -47,30 +48,80 @@ function assertAvailable(): void {
     throw new GeoError('unsupported', 'This browser has no location support.');
 }
 
-function getFix(options: PositionOptions): Promise<Fix> {
-  return new Promise((resolve, reject) =>
-    navigator.geolocation.getCurrentPosition(
-      (p) => resolve(toFix(p)),
-      (e) => reject(toGeoError(e)),
-      options,
-    ),
-  );
+export interface AcquireHandlers {
+  /** Called with the first fix and then with every more accurate one. */
+  onFix: (fix: Fix) => void;
+  /** Called once with the best fix when the target accuracy is reached or the wait runs out. */
+  onDone: (best: Fix) => void;
+  onError: (error: GeoError) => void;
+}
+
+export interface AcquireOptions {
+  /** Stop refining once a fix is at least this accurate (metres). */
+  targetAccuracy?: number;
+  /** Give up refining (or fail, if nothing arrived) after this long. */
+  maxWaitMs?: number;
+  /** Ask for a coarse Wi-Fi/cell fix if GPS has said nothing by then. */
+  coarseFallbackMs?: number;
 }
 
 /**
- * GPS first; if the device can't get a satellite fix in time (indoors, cold start), fall back to a
- * coarse Wi-Fi/cell fix rather than failing — a 300 m answer now beats a 5 m answer never.
+ * Progressive location: a phone's first answer is usually a cached or Wi-Fi/cell estimate that can
+ * be kilometres off, and the GPS converges over the next few seconds. Report the first fix at once
+ * (so the app can start), keep listening, and report each more accurate fix until the target
+ * accuracy is reached. Returns a function that cancels the acquisition.
  */
-export async function locate(): Promise<Fix> {
+export function acquirePosition(
+  { onFix, onDone, onError }: AcquireHandlers,
+  { targetAccuracy = 25, maxWaitMs = 20_000, coarseFallbackMs = 6_000 }: AcquireOptions = {},
+): () => void {
   assertAvailable();
-  try {
-    return await getFix({ enableHighAccuracy: true, timeout: 12_000, maximumAge: 15_000 });
-  } catch (error) {
-    if (error instanceof GeoError && error.kind !== 'denied') {
-      return getFix({ enableHighAccuracy: false, timeout: 15_000, maximumAge: 120_000 });
-    }
-    throw error;
-  }
+  let best: Fix | null = null;
+  let finished = false;
+
+  const finish = () => {
+    if (finished) return false;
+    finished = true;
+    navigator.geolocation.clearWatch(watchId);
+    clearTimeout(fallbackTimer);
+    clearTimeout(deadline);
+    return true;
+  };
+
+  const consider = (fix: Fix) => {
+    if (finished || (best && fix.accuracy >= best.accuracy)) return;
+    best = fix;
+    onFix(fix);
+    if (fix.accuracy <= targetAccuracy && finish()) onDone(fix);
+  };
+
+  const watchId = navigator.geolocation.watchPosition(
+    (p) => consider(toFix(p)),
+    (e) => {
+      const error = toGeoError(e);
+      // Timeouts and transient failures: keep waiting for GPS or the coarse fallback.
+      if (error.kind === 'denied' && finish()) onError(error);
+    },
+    { enableHighAccuracy: true, maximumAge: 5_000, timeout: maxWaitMs },
+  );
+
+  const fallbackTimer = setTimeout(() => {
+    if (best || finished) return;
+    navigator.geolocation.getCurrentPosition(
+      (p) => consider(toFix(p)),
+      () => undefined,
+      { enableHighAccuracy: false, maximumAge: 30_000, timeout: maxWaitMs },
+    );
+  }, coarseFallbackMs);
+
+  const deadline = setTimeout(() => {
+    const result = best;
+    if (!finish()) return;
+    if (result) onDone(result);
+    else onError(new GeoError('timeout', 'Getting a location fix took too long.'));
+  }, maxWaitMs);
+
+  return () => void finish();
 }
 
 /** Continuous tracking; returns an unsubscribe function. */

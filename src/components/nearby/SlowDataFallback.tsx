@@ -55,7 +55,7 @@ export function SlowDataFallback({ failed = false }: { failed?: boolean }) {
       </p>
       <a
         href={telHref(emergency.number)}
-        className="flex items-center justify-center gap-2 rounded-xl bg-danger px-4 py-2.5 text-sm font-bold text-white"
+        className="flex items-center justify-center gap-2 rounded-xl bg-danger-solid px-4 py-2.5 text-sm font-bold text-white"
       >
         <Phone size={16} /> Call {emergency.number}
       </a>
