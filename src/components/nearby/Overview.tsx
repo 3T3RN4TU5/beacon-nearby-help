@@ -9,6 +9,7 @@ import { CategorySign } from '../CategoryIcon';
 import { Button } from '../ui/Button';
 import { HazardBar, SectionLabel, Skeleton } from '../ui/primitives';
 import { CategoryCard } from './CategoryCard';
+import { SlowDataFallback } from './SlowDataFallback';
 import { MODE_WORD } from './labels';
 import { DistanceText, TravelFigure, TravelModeSwitch, WeatherBanner } from './shared';
 import { useUnits } from '@/hooks/useUnits';
@@ -30,6 +31,7 @@ export function Overview() {
           <p className="hud text-muted">
             Scanning {radius ? formatDistance(radius, units) : 'nearby'} radius · OpenStreetMap
           </p>
+          <SlowDataFallback />
           <div className="grid grid-cols-2 gap-2.5">
             {PRIMARY_CATEGORIES.map((id) => (
               <Skeleton key={id} className="h-[148px] rounded-2xl" />
@@ -51,11 +53,18 @@ export function Overview() {
               call for help.
             </p>
           </div>
-          <Button variant="outline" size="sm" onClick={() => placesQuery.refetch()}>
-            <RefreshCw size={14} /> Try again
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => placesQuery.refetch()}
+            disabled={placesQuery.isFetching}
+          >
+            <RefreshCw size={14} className={placesQuery.isFetching ? 'animate-spin' : ''} />
+            {placesQuery.isFetching ? 'Retrying…' : 'Try again'}
           </Button>
         </div>
       )}
+      {placesQuery.isError && !results && <SlowDataFallback failed />}
 
       {results && (
         <>

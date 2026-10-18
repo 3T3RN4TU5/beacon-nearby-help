@@ -1,5 +1,5 @@
 import { emergencyLines, primaryLine } from './numbers';
-import { buildLocationMessage, navigationLinks, smsHref, telHref } from './share';
+import { buildLocationMessage, googleMapsSearchLink, navigationLinks, smsHref, telHref } from './share';
 
 describe('emergency numbers', () => {
   it('returns country-specific lines', () => {
@@ -35,6 +35,12 @@ describe('share helpers', () => {
     expect(msg).toContain('Janpath, New Delhi');
     expect(msg).toContain('https://maps.google.com/?q=28.613900,77.209000');
     expect(msg).toContain('Nearest hospital: RML Hospital, 1.8 km away');
+  });
+
+  it('builds a Google Maps search around a point as a fallback', () => {
+    expect(googleMapsSearchLink('police station', { lat: 28.6315, lon: 77.2167 })).toBe(
+      'https://www.google.com/maps/search/police%20station/@28.63150,77.21670,15z',
+    );
   });
 
   it('hands off to navigation apps with the right travel mode', () => {

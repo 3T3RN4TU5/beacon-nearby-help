@@ -2,6 +2,13 @@
 
 All notable changes to Beacon are documented here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project uses [Semantic Versioning](https://semver.org/).
 
+## [0.1.1] — 2026-10-18
+
+### Added
+
+- Graceful degradation when the free Overpass servers are saturated: after 10 seconds (or on failure) the Nearby tab offers the local emergency number and one-tap Google Maps searches for hospitals, police, pharmacies and fuel around the user, while Beacon keeps retrying.
+- Production deployment on Vercel: <https://beacon-nearby-help.vercel.app>.
+
 ## [0.1.0] — 2026-10-18
 
 ### Added

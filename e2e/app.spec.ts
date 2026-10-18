@@ -100,5 +100,11 @@ test.describe('Beacon', () => {
     await page.getByRole('button', { name: 'Locate me' }).click();
     await expect(page.getByText('Map data servers are busy')).toBeVisible({ timeout: 60_000 });
     await expect(page.getByRole('button', { name: 'Try again' })).toBeVisible();
+    // A way out that doesn't depend on Beacon's data sources.
+    await expect(page.getByRole('link', { name: /Call 112/ }).first()).toHaveAttribute('href', 'tel:112');
+    await expect(page.getByRole('link', { name: /Hospitals/ })).toHaveAttribute(
+      'href',
+      'https://www.google.com/maps/search/hospital/@28.63150,77.21670,15z',
+    );
   });
 });

@@ -7,6 +7,8 @@
 **The nearest hospital, police station, pharmacy and fuel — ranked by real travel time, routed, and paired with weather alerts for the road.**
 Free, open data. No accounts. No tracking. No AI.
 
+### [**Open the live app → beacon-nearby-help.vercel.app**](https://beacon-nearby-help.vercel.app)
+
 [![CI](https://github.com/Jeevan2410/beacon-nearby-help/actions/workflows/ci.yml/badge.svg)](https://github.com/Jeevan2410/beacon-nearby-help/actions/workflows/ci.yml)
 ![TypeScript](https://img.shields.io/badge/TypeScript-strict-3178c6)
 ![PWA](https://img.shields.io/badge/PWA-offline--ready-5a0fc8)
@@ -94,7 +96,7 @@ A few decisions worth knowing:
 | Data     | TanStack Query (persisted to localStorage) · Zustand                                                |
 | UI       | Tailwind CSS 4 · Motion · Lucide · Overpass & Overpass Mono typefaces                               |
 | PWA      | vite-plugin-pwa (Workbox) — precache + runtime tile cache                                           |
-| Quality  | Vitest (83 unit tests) · Playwright (end-to-end, mocked APIs, desktop + mobile) · ESLint · Prettier |
+| Quality  | Vitest (84 unit tests) · Playwright (end-to-end, mocked APIs, desktop + mobile) · ESLint · Prettier |
 | CI/CD    | GitHub Actions · Vercel / GitHub Pages / Cloudflare Pages · Dependabot                              |
 | Security | Strict Content-Security-Policy, Permissions-Policy, HSTS (one source: [`vercel.json`](vercel.json)) |
 

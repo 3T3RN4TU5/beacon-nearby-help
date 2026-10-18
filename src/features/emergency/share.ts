@@ -5,6 +5,10 @@ import { formatDistance, type Units } from '@/lib/format';
 const fixed = (p: LatLng) => `${p.lat.toFixed(6)},${p.lon.toFixed(6)}`;
 
 export const googleMapsLink = (p: LatLng) => `https://maps.google.com/?q=${fixed(p)}`;
+
+/** Google Maps search for a kind of place around a point ("hospital near here"). */
+export const googleMapsSearchLink = (what: string, p: LatLng) =>
+  `https://www.google.com/maps/search/${encodeURIComponent(what)}/@${p.lat.toFixed(5)},${p.lon.toFixed(5)},15z`;
 export const osmLink = (p: LatLng) =>
   `https://www.openstreetmap.org/?mlat=${p.lat.toFixed(6)}&mlon=${p.lon.toFixed(6)}#map=17/${p.lat.toFixed(5)}/${p.lon.toFixed(5)}`;
 

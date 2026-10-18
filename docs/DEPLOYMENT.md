@@ -30,7 +30,7 @@ git remote add origin https://github.com/Jeevan2410/beacon-nearby-help.git
 git push -u origin main
 ```
 
-GitHub Actions starts automatically: the **CI** workflow typechecks, lints, runs the 83 unit tests, builds, then runs the Playwright end-to-end suite on desktop and mobile. Check the _Actions_ tab — both jobs should be green.
+GitHub Actions starts automatically: the **CI** workflow typechecks, lints, runs the unit tests, builds, then runs the Playwright end-to-end suite on desktop and mobile. Check the _Actions_ tab — both jobs should be green.
 
 ## 2a. Deploy on Vercel (recommended)
 
@@ -109,6 +109,9 @@ The free public services are donated capacity. If Beacon gets real traffic:
 
 Kept up to date as the project develops, so you can see what each deployment contains.
 
+**Production:** <https://beacon-nearby-help.vercel.app> — Vercel project `beacon-nearby-help`, linked to `Jeevan2410/beacon-nearby-help`; every push to `main` deploys automatically.
+
 | Version | Date       | Highlights                                                                                                                                                                                                                                                                                                                                 |
 | ------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| 0.1.1   | 2026-10-18 | Live on Vercel. If the free map-data servers are slow (>10 s) or down, Beacon now offers "Call 112" and one-tap Google Maps searches for each category while it keeps retrying. 84 unit + 14 end-to-end tests.                                                                                                                             |
 | 0.1.0   | 2026-10-18 | First release: one-tap nearest help (7 categories) ranked by road time, routes and turn-by-turn, 3D globe/map with NASA night lights, road-weather alerts and riding score, SOS (country numbers, location sharing, alarm, contacts, medical ID), offline PWA, strict CSP, 83 unit + 14 end-to-end tests, CI and three deployment targets. |
