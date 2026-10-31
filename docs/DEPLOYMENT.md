@@ -19,14 +19,14 @@ None of the data APIs (Overpass, OSRM, Open-Meteo, OpenFreeMap, Nominatim, Photo
 
 ## 1. Create the GitHub repository
 
-Recommended name: **`beacon-nearby-help`** (the README badges assume `Jeevan2410/beacon-nearby-help`; edit them if you choose another name).
+Recommended name: **`beacon-nearby-help`** (the README badges assume `3T3RN4TU5/beacon-nearby-help`; edit them if you choose another name).
 
 On github.com → **New repository** → name `beacon-nearby-help` → _Public_ → **do not** add a README, .gitignore or licence (the project has them) → **Create repository**.
 
 Then, from the project folder:
 
 ```bash
-git remote add origin https://github.com/Jeevan2410/beacon-nearby-help.git
+git remote add origin https://github.com/3T3RN4TU5/beacon-nearby-help.git
 git push -u origin main
 ```
 
@@ -52,7 +52,7 @@ Security headers (CSP, Permissions-Policy, HSTS) and long-term caching for hashe
 2. **Settings → Secrets and variables → Actions → Variables → New repository variable**: `ENABLE_PAGES` = `true`.
 3. Push to `main`, or run **Actions → Deploy to GitHub Pages → Run workflow**.
 
-The site appears at `https://jeevan2410.github.io/beacon-nearby-help/`. The workflow builds with `BASE_PATH=/beacon-nearby-help/` so assets, the service worker and the PWA scope live under that path.
+The site appears at `https://3t3rn4tu5.github.io/beacon-nearby-help/`. The workflow builds with `BASE_PATH=/beacon-nearby-help/` so assets, the service worker and the PWA scope live under that path.
 
 _Limitation:_ GitHub Pages can't send custom HTTP headers, so the CSP and HSTS from `vercel.json` aren't applied there. The app works the same; prefer Vercel or Cloudflare for the hardened setup.
 
@@ -109,7 +109,7 @@ The free public services are donated capacity. If Beacon gets real traffic:
 
 Kept up to date as the project develops, so you can see what each deployment contains.
 
-**Production:** <https://beacon-nearby-help.vercel.app> — Vercel project `beacon-nearby-help`, linked to `Jeevan2410/beacon-nearby-help`; every push to `main` deploys automatically.
+**Production:** <https://beacon-nearby-help.vercel.app> — Vercel project `beacon-nearby-help`, linked to `3T3RN4TU5/beacon-nearby-help`; every push to `main` deploys automatically.
 
 | Version | Date       | Highlights                                                                                                                                                                                                                                                                                                                                                                                                                                   |
 | ------- | ---------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
