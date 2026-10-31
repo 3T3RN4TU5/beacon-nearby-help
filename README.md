@@ -9,7 +9,7 @@ Free, open data. No accounts. No tracking. No AI.
 
 ### [**Open the live app → beacon-nearby-help.vercel.app**](https://beacon-nearby-help.vercel.app)
 
-[![CI](https://github.com/Jeevan2410/beacon-nearby-help/actions/workflows/ci.yml/badge.svg)](https://github.com/Jeevan2410/beacon-nearby-help/actions/workflows/ci.yml)
+[![CI](https://github.com/3T3RN4TU5/beacon-nearby-help/actions/workflows/ci.yml/badge.svg)](https://github.com/3T3RN4TU5/beacon-nearby-help/actions/workflows/ci.yml)
 ![TypeScript](https://img.shields.io/badge/TypeScript-strict-3178c6)
 ![PWA](https://img.shields.io/badge/PWA-offline--ready-5a0fc8)
 ![License](https://img.shields.io/badge/license-MIT-d6ff3d)
